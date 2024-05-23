@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -15,20 +15,26 @@ import {
   Text,
   useColorScheme,
   View,
+  NativeModules,
+  NativeEventEmitter,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// const {goodbyejava} = NativeModules;
+
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
+interface CalendarModule {
+  createCalendarEvent(name: string, location: string): Number;
+  printNumbers(): Number;
+}
+const {CalendarModule} = NativeModules as {CalendarModule: CalendarModule};
+
+// const CalendarModule = NativeModules.CalendarModule;
+// const geomagneticFieldEmitter = new NativeEventEmitter(CalendarModule);
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
@@ -60,38 +66,36 @@ function App(): React.JSX.Element {
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   };
 
+  const onPress = () => {
+    console.log(CalendarModule.printNumbers(), 'this is from java');
+  };
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+
+      <View>
+        <Text
+          onPress={onPress}
+          style={isDarkMode ? styles.texthelloDark : styles.texthelloDarkLight}>
+          Cendrol People<Text style={styles.dot}>.</Text>
+        </Text>
+        <Text
+          onPress={() => {
+            console.log(CalendarModule.seeThisNumber());
+          }}
+          style={isDarkMode ? styles.texthelloDark : styles.texthelloDarkLight}>
+          Can you see the number
+        </Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -112,6 +116,21 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  texthelloDark: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  texthelloDarkLight: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  dot: {
+    fontSize: 50,
+    fontWeight: 'bold',
+    color: 'limegreen',
   },
 });
 
